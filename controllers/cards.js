@@ -24,14 +24,14 @@ module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
 
   return cardModel
-    .findById(cardId)
+    .findByIdAndDelete(cardId)
     .then((card) => {
       if (!card) {
         return res
           .status(404)
           .send({ message: ' Карточка с указанным id не найдена' });
       }
-      return card.remove().then(() => res.status(200).send({ message: 'Карточка удалена' }));
+      return res.status(200).send({ data: card });
     })
     .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию.' }));
 };
