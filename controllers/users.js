@@ -65,7 +65,6 @@ module.exports.updateUser = (req, res) => {
       { name, about },
       { new: true, runValidators: true }
     )
-
     .then((user) => {
       return res.status(200).send(user);
     })
