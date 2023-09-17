@@ -7,21 +7,20 @@ module.exports.getUser = (req, res) => userModel
   .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию' }));
 
 module.exports.getUserById = (req, res) => {
-  const id = req.user._id;
+  const { userId } = req.params;
   return userModel
-    .findById(id)
+    .findById(userId)
     .then((user) => {
-      if (user === null) {
+      if (!user) {
         return res
           .status(404)
-          .send({ message: ' Пользователь по указанному _id не найден' });
+          .send({ message: ' Пользователь по указанному id не найден' });
       }
-
-      return res.status(200).send(user);
+      return res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Некорректный _id' });
+        return res.status(400).send({ message: 'Передан некорректный id' });
       }
       return res.status(500).send({ message: 'Ошибка по умолчанию' });
     });
