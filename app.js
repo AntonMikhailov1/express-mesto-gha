@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const httpStatus = require('http-status-codes').StatusCodes;
 const CardsRouter = require('./routes/cards');
 const UsersRouter = require('./routes/users');
 
@@ -10,7 +11,7 @@ const app = express();
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.get('/', (req, res) => {
-  res.status(200).send('Hello World!');
+  res.status(httpStatus.OK).send('Hello World!');
 });
 
 app.use((req, res, next) => {
@@ -26,7 +27,7 @@ app.use(CardsRouter);
 app.use(UsersRouter);
 
 app.use('/*', (req, res) => {
-  res.status(404).send({ message: 'Страница не найдена' });
+  res.status(httpStatus.NOT_FOUND).send({ message: 'Страница не найдена' });
 });
 
 app.listen(PORT, () => {
