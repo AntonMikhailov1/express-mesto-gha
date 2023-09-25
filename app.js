@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const httpStatus = require('http-status-codes').StatusCodes;
 const CardsRouter = require('./routes/cards');
 const UsersRouter = require('./routes/users');
+const { login, createUser } = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
 
@@ -14,13 +16,8 @@ app.get('/', (req, res) => {
   res.status(httpStatus.OK).send('Hello World!');
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5d8b8592978f8bd833ca8133',
-  };
-
-  next();
-});
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.use(express.json());
 app.use(CardsRouter);

@@ -1,5 +1,5 @@
 const httpStatus = require('http-status-codes').StatusCodes;
-const cardModel = require('../models/card');
+const Card = require('../models/card');
 
 module.exports.getCard = (req, res) => cardModel
   .find({})
@@ -10,7 +10,7 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
-  return cardModel
+  return Card
     .create({ name, link, owner })
     .then((card) => res.status(httpStatus.CREATED).send(card))
     .catch((err) => {
@@ -24,22 +24,27 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
 
-  return cardModel
-    .findByIdAndDelete(cardId)
+  return Card
+    .findById(cardId)
     .then((card) => {
       if (!card) {
         return res
           .status(httpStatus.NOT_FOUND)
-          .send({ message: ' Карточка с указанным id не найдена' });
+          .send({ message: 'Карточка с указанным id не найдена' });
       }
-      return res.status(httpStatus.OK).send({ data: card });
+      if (!card.owner.toString() !== req.user._id) {
+        return res
+          .status(httpStatus.FORBIDDEN)
+          .send({ message: 'Вы не можете удалить данную карточку' });
+      }
+      card.remove().then(() => res.status(httpStatus.ОК).send({ message: 'Карточка удалена' }));
     })
     .catch(() => res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию.' }));
 };
 
 module.exports.likeCard = (req, res) => {
   const { cardId } = req.params;
-  return cardModel
+  return Card
     .findByIdAndUpdate(
       cardId,
       { $addToSet: { likes: req.user._id } },
@@ -67,7 +72,7 @@ module.exports.likeCard = (req, res) => {
 
 module.exports.dislikeCard = (req, res) => {
   const { cardId } = req.params;
-  return cardModel
+  return Card
     .findByIdAndUpdate(
       cardId,
       { $pull: { likes: req.user._id } },
