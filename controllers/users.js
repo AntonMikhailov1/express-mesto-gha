@@ -16,6 +16,7 @@ module.exports.getCurrentUser = (req, res) => {
 
   User
     .findById(currentUserId)
+    // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
         return res

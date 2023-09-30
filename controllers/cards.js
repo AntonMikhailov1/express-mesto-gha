@@ -26,6 +26,7 @@ module.exports.deleteCard = (req, res) => {
 
   return Card
     .findById(cardId)
+    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
         return res

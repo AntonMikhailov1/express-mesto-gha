@@ -4,14 +4,15 @@ const httpStatus = require('http-status-codes').StatusCodes;
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
+// eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
-  const token = req.cookies.jwt;
+  const { authorization } = req.headers;
 
-  if (!token) {
-    return res
-      .status(httpStatus.UNAUTHORIZED)
-      .send({ message: 'Необходима авторизация' });
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return res.status(401).send({ message: 'Необходима авторизация' });
   }
+
+  const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
