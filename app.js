@@ -7,7 +7,7 @@ const CardsRouter = require('./routes/cards');
 const UsersRouter = require('./routes/users');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
-const { validateUser, validateLogin } = require('./middlewares/validation');
+// const { validateUser, validateLogin } = require('./middlewares/validation');
 
 const { PORT = 3000 } = process.env;
 
@@ -25,8 +25,10 @@ app.get('/', (req, res) => {
 app.post('/signin', login);
 app.post('/signup', createUser);
 
-app.use('/', auth, CardsRouter);
-app.use('/', auth, UsersRouter);
+app.use(auth);
+
+app.use('/', CardsRouter);
+app.use('/', UsersRouter);
 
 app.use('/*', (res) => {
   res.status(httpStatus.NOT_FOUND).send({ message: 'Страница не найдена' });
