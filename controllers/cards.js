@@ -1,7 +1,7 @@
 const httpStatus = require('http-status-codes').StatusCodes;
 const Card = require('../models/card');
 
-module.exports.getCard = (req, res) => cardModel
+module.exports.getCard = (req, res) => Card
   .find({})
   .then((cards) => res.status(httpStatus.OK).send(cards))
   .catch(() => res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка по умолчанию.' }));
