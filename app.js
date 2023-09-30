@@ -12,6 +12,7 @@ const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
+app.use(express.json());
 app.get('/', (req, res) => {
   res.status(httpStatus.OK).send('Hello World!');
 });
@@ -19,7 +20,6 @@ app.get('/', (req, res) => {
 app.post('/signin', login);
 app.post('/signup', createUser);
 
-app.use(express.json());
 app.use(CardsRouter);
 app.use(UsersRouter);
 
