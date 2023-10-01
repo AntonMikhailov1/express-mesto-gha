@@ -33,8 +33,8 @@ app.get('/', (req, res) => {
   res.status(httpStatus.OK).send('Hello World!');
 });
 
-app.post('/signin', validateLogin, login);
-app.post('/signup', validateUser, createUser);
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.use(auth);
 
