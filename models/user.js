@@ -1,8 +1,8 @@
 // models/user.js
 const mongoose = require('mongoose');
 const validator = require('validator');
-const httpStatus = require('http-status-codes').StatusCodes;
 const bcrypt = require('bcryptjs');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -45,16 +45,12 @@ userSchema.statics.findUserByCredentials = function (res, email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return res
-          .status(httpStatus.UNAUTHORIZED)
-          .send({ message: 'Пользователя не существует' });
+        throw new UnauthorizedError('Пользователя не существует');
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return res
-              .status(httpStatus.UNAUTHORIZED)
-              .send({ message: 'Неправильные email или пароль' });
+            throw new UnauthorizedError('Неправильныq email или пароль');
           }
           return user;
         });
