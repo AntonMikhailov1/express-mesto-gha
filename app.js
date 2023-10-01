@@ -10,7 +10,7 @@ const UsersRouter = require('./routes/users');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
-// const { validateUser, validateLogin } = require('./middlewares/validation');
+const { validateUser, validateLogin } = require('./middlewares/validation');
 
 const { PORT = 3000 } = process.env;
 
@@ -33,8 +33,8 @@ app.get('/', (req, res) => {
   res.status(httpStatus.OK).send('Hello World!');
 });
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', validateLogin, login);
+app.post('/signup', validateUser, createUser);
 
 app.use(auth);
 
