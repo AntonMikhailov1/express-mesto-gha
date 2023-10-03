@@ -23,9 +23,7 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  const { cardId } = req.params;
-
-  Card.findById(cardId)
+  Card.findById(req.params._id)
     // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
