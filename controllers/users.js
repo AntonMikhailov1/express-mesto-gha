@@ -6,7 +6,6 @@ const httpStatus = require('http-status-codes').StatusCodes;
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 const ConflictError = require('../errors/UnauthorizedError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
@@ -23,7 +22,7 @@ const getCurrentUser = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
-        throw new ConflictError('Пользователь по указанному id не найден');
+        throw new NotFoundError('Пользователь по указанному id не найден');
       }
       res.status(httpStatus.OK).send(user);
     })
@@ -78,7 +77,7 @@ const createUser = (req, res, next) => {
         .catch((err) => {
           if (err.code === 11000) {
             return next(
-              new UnauthorizedError('Пользователь с таким email уже существует'),
+              new ConflictError('Пользователь с таким email уже существует'),
             );
           }
           if (err instanceof mongoose.Error.ValidationError) {
@@ -147,7 +146,6 @@ const login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
-
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,

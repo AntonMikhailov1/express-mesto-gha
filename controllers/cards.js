@@ -4,7 +4,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
-const getCard = (res, next) => Card.find({})
+const getCard = (req, res, next) => Card.find({})
   .then((cards) => res.status(httpStatus.OK).send(cards))
   .catch(next);
 
@@ -59,7 +59,9 @@ const likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(
-          new BadRequestError('Переданы некорректные данные для постановки/снятия лайка'),
+          new BadRequestError(
+            'Переданы некорректные данные для постановки/снятия лайка',
+          ),
         );
       }
       return next(err);
