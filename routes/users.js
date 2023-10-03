@@ -8,14 +8,14 @@ const {
   updateAvatar,
 } = require('../controllers/users');
 const {
-  validateId,
+  validateUserId,
   validateUserUpdate,
   validateAvatar,
 } = require('../middlewares/validation');
 
 router.get('/users', getUser);
-router.get('/users/:userId', validateId, getUserById);
-router.get('/users/me', validateId, getCurrentUser);
+router.get('/users/me', getCurrentUser);
+router.get('/users/:userId', validateUserId, getUserById);
 router.patch('/users/me', validateUserUpdate, updateUser);
 router.patch('/users/me/avatar', validateAvatar, updateAvatar);
 

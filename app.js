@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
@@ -11,12 +12,15 @@ const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
 const { validateUser, validateLogin } = require('./middlewares/validation');
+const errorHandler = require('./middlewares/errorHandler');
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
 app.use(helmet());
+
+app.use(cookieParser());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -46,15 +50,7 @@ app.use('/*', () => {
 });
 
 app.use(errors());
-
-app.use((err, req, res, next) => {
-  if (err.status) {
-    res.status(err.status).send(err.message);
-    return;
-  }
-  res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ message: `Ошибка по умолчанию: ${err.message}` });
-  next();
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
