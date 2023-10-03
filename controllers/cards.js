@@ -35,7 +35,7 @@ const deleteCard = (req, res, next) => {
       }
       return card
         .deleteOne()
-        .then(() => res.status(200).send({ message: 'Карточка успешно удалена' }));
+        .then(() => res.status(httpStatus.OK).send({ message: 'Карточка успешно удалена' }));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
