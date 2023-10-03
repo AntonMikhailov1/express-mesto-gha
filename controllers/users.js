@@ -36,7 +36,7 @@ const getCurrentUser = (req, res, next) => {
 const getUserById = (req, res, next) => {
   const { userId } = req.params;
 
-  return User.findById(userId)
+  User.findById(userId)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь по указанному id не найден');
@@ -96,7 +96,7 @@ const createUser = (req, res, next) => {
 const updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
-  return User.findByIdAndUpdate(
+  User.findByIdAndUpdate(
     req.user._id,
     { name, about },
     { new: true, runValidators: true },
@@ -120,7 +120,7 @@ const updateUser = (req, res, next) => {
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
-  return User.findByIdAndUpdate(
+  User.findByIdAndUpdate(
     req.user._id,
     { avatar },
     { new: true, runValidators: true },
@@ -139,7 +139,7 @@ const updateAvatar = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password)
+  User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },

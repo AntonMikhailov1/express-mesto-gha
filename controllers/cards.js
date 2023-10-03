@@ -12,7 +12,7 @@ const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
-  return Card.create({ name, link, owner })
+  Card.create({ name, link, owner })
     .catch(() => {
       throw new BadRequestError(
         'Переданы некорректные данные при создании карточки',
@@ -45,7 +45,7 @@ const deleteCard = (req, res, next) => {
 
 const likeCard = (req, res, next) => {
   const { cardId } = req.params;
-  return Card.findByIdAndUpdate(
+  Card.findByIdAndUpdate(
     cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
@@ -70,7 +70,7 @@ const likeCard = (req, res, next) => {
 
 const dislikeCard = (req, res, next) => {
   const { cardId } = req.params;
-  return Card.findByIdAndUpdate(
+  Card.findByIdAndUpdate(
     cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
