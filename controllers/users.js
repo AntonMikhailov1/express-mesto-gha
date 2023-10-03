@@ -22,13 +22,13 @@ const getCurrentUser = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному id не найден');
+        throw new NotFoundError({ message: 'Пользователь по указанному id не найден' });
       }
       res.status(httpStatus.OK).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(BadRequestError('Переданы некорректные данные'));
+        next(BadRequestError({ message: 'Переданы некорректные данные' }));
       } else next(err);
     });
 };
@@ -39,13 +39,13 @@ const getUserById = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному id не найден');
+        throw new NotFoundError({ message: 'Пользователь по указанному id не найден' });
       }
       return res.status(httpStatus.OK).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        next(new BadRequestError({ message: 'Переданы некорректные данные' }));
       } else next(err);
     });
 };
@@ -77,13 +77,13 @@ const createUser = (req, res, next) => {
         .catch((err) => {
           if (err.code === 11000) {
             return next(
-              new ConflictError('Пользователь с таким email уже существует'),
+              new ConflictError({ message: 'Пользователь с таким email уже существует' }),
             );
           }
           if (err instanceof mongoose.Error.ValidationError) {
             return next(
               new BadRequestError(
-                'Переданы некоректные данные при создании пользователя',
+                { message: 'Переданы некоректные данные при создании пользователя' },
               ),
             );
           }
@@ -103,14 +103,14 @@ const updateUser = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден');
+        throw new NotFoundError({ message: 'Пользователь не найден' });
       }
       res.status(httpStatus.OK).send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(new BadRequestError(
-          'Переданы некорректные данные при обновлении пофиля',
+          { message: 'Переданы некорректные данные при обновлении пофиля' },
         ));
       }
       next(err);
@@ -129,7 +129,7 @@ const updateAvatar = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(new BadRequestError(
-          'Переданы некорректные данные при обновлении пофиля',
+          { message: 'Переданы некорректные данные при обновлении пофиля' },
         ));
       }
       next(err);
@@ -150,7 +150,8 @@ const login = (req, res, next) => {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
         sameSite: true,
-      }).end();
+      })
+        .send({ message: 'Авторизация прошла успешно' });
     })
     .catch(next);
 };

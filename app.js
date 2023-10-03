@@ -34,7 +34,7 @@ app.use(limiter);
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.get('/', (req, res) => {
-  res.status(httpStatus.OK).send('Hello World!');
+  res.status(httpStatus.OK).send({ message: 'Hello World!' });
 });
 
 app.post('/signin', validateLogin, login);
@@ -46,7 +46,7 @@ app.use('/', CardsRouter);
 app.use('/', UsersRouter);
 
 app.use('/*', () => {
-  throw new NotFoundError('Страница не найдена');
+  throw new NotFoundError({ message: 'Страница не найдена' });
 });
 
 app.use(errors());

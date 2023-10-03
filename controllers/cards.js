@@ -15,7 +15,7 @@ const createCard = (req, res, next) => {
   Card.create({ name, link, owner })
     .catch(() => {
       throw new BadRequestError(
-        'Переданы некорректные данные при создании карточки',
+        { message: 'Переданы некорректные данные при создании карточки' },
       );
     })
     .then((card) => res.status(httpStatus.CREATED).send(card))
@@ -29,7 +29,7 @@ const deleteCard = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным id не найдена');
+        throw new NotFoundError({ message: 'Карточка с указанным id не найдена' });
       }
       if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Вы не можете удалить данную карточку');
@@ -50,7 +50,7 @@ const likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Передан несуществующий id');
+        throw new NotFoundError({ message: 'Передан несуществующий id' });
       }
       return res.status(httpStatus.OK).send({ data: card });
     })
@@ -58,7 +58,7 @@ const likeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(
           new BadRequestError(
-            'Переданы некорректные данные для постановки/снятия лайка',
+            { message: 'Переданы некорректные данные для постановки/снятия лайка' },
           ),
         );
       }
@@ -75,7 +75,7 @@ const dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Передан несуществующий id');
+        throw new NotFoundError({ message: 'Передан несуществующий id' });
       }
       return res.status(httpStatus.OK).send({ data: card });
     })
@@ -83,7 +83,7 @@ const dislikeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(
           new BadRequestError(
-            'Переданы некорректные данные для постановки/снятия лайка',
+            { message: 'Переданы некорректные данные для постановки/снятия лайка' },
           ),
         );
       }
