@@ -66,12 +66,11 @@ const createUser = (req, res, next) => {
           password: hash,
         })
         .then((user) => res.status(httpStatus.CREATED).send({
-          data: {
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            email: user.email,
-          },
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+          _id: user._id,
         }))
         // eslint-disable-next-line consistent-return
         .catch((err) => {
