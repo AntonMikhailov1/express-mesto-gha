@@ -14,29 +14,36 @@ const createCard = (req, res, next) => {
 
   Card.create({ name, link, owner })
     .catch(() => {
-      throw new BadRequestError(
-        { message: 'Переданы некорректные данные при создании карточки' },
-      );
+      throw new BadRequestError({
+        message: 'Переданы некорректные данные при создании карточки',
+      });
     })
     .then((card) => res.status(httpStatus.CREATED).send(card))
     .catch(next);
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findById(req.params._id)
-    // eslint-disable-next-line consistent-return
+  const { cardId } = req.params;
+
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError({ message: 'Карточка с указанным id не найдена' });
+        return next(new NotFoundError({ message: 'Карточка с указанным id не найдена' }));
       }
-      if (card.owner.toString() !== req.user._id) {
-        throw new ForbiddenError({ message: 'Вы не можете удалить данную карточку' });
+      if (!card.owner.equals(req.user._id)) {
+        return next(new ForbiddenError({ message: 'Нет доступа' }));
       }
       return card
         .deleteOne()
-        .then(() => res.status(httpStatus.ОК).send({ message: 'Карточка удалена' }));
+        .then(() => res.status(200).send({ message: 'Карточка успешно удалена' }));
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError({ message: 'Переданы некорректные данные' }));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const likeCard = (req, res, next) => {
@@ -55,9 +62,9 @@ const likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(
-          new BadRequestError(
-            { message: 'Переданы некорректные данные для постановки/снятия лайка' },
-          ),
+          new BadRequestError({
+            message: 'Переданы некорректные данные для постановки/снятия лайка',
+          }),
         );
       }
       return next(err);
@@ -80,9 +87,9 @@ const dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(
-          new BadRequestError(
-            { message: 'Переданы некорректные данные для постановки/снятия лайка' },
-          ),
+          new BadRequestError({
+            message: 'Переданы некорректные данные для постановки/снятия лайка',
+          }),
         );
       }
       return next(err);
