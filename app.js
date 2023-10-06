@@ -8,18 +8,20 @@ const { errors } = require('celebrate');
 const httpStatus = require('http-status-codes').StatusCodes;
 const CardsRouter = require('./routes/cards');
 const UsersRouter = require('./routes/users');
-const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
+
+const auth = require('./middlewares/auth');
 const { validateUser, validateLogin } = require('./middlewares/validation');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const errorHandler = require('./middlewares/errorHandler');
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
+app.use(requestLogger);
 app.use(helmet());
-
 app.use(cookieParser());
 
 const limiter = rateLimit({
@@ -44,11 +46,11 @@ app.use(auth);
 
 app.use('/', CardsRouter);
 app.use('/', UsersRouter);
-
 app.use('/*', () => {
   throw new NotFoundError({ message: 'Страница не найдена' });
 });
 
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 
